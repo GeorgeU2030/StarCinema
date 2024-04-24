@@ -14,6 +14,8 @@ export const databaseProviders = [
         entities: [
             __dirname + '/../**/*.entity{.ts,.js}',
         ],
+        migrations: [/*...*/],
+        migrationsTableName: "custom_migration_table",
       });
       return dataSource.initialize();
     },
