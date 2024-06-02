@@ -31,4 +31,6 @@ export class AuthController {
       signUpDto.role = 'customer';     
       return this.authService.signUp(signUpDto);
     }
+
+    
 }

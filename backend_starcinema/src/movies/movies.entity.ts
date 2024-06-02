@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Function } from '../functions/functions.entity';
 
 @Entity()
 export class Movie {
@@ -12,9 +13,26 @@ export class Movie {
 	year: number;
 
 	@Column()
+	premiereDate: Date;
+
+	@Column()
+	rating: string;
+
+	@Column()
+	isprox: boolean;
+
+	@Column()
+	cover: string;
+
+	@Column()
 	duration: number;
+
+	@Column()
+	trailer: string;
 
 	@Column('text', {array: true, default: '{}'})
 	genres: string[];
-    functions: any;
+    
+	@OneToMany(() => Function, (func)=> func.movie)
+	functions: Function[];
 }
