@@ -1,12 +1,12 @@
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDate, IsDateString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateFunctionDto {
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     startTime: Date;
 
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     endTime: Date;
 
     @IsNotEmpty()

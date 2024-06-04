@@ -1,18 +1,37 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Between, LessThanOrEqual, MoreThanOrEqual, In, Not} from 'typeorm';
 import { Function } from './functions.entity';
 import { CreateFunctionDto } from './dto/create-function.dto';
 import { UpdateFunctionDto } from './dto/update-function.dto';
+import { Room } from '../rooms/rooms.entity';
+import { Movie } from '../movies/movies.entity';
 
 @Injectable()
 export class FunctionsService {
     constructor(
         @Inject('FUNCTIONS_REPOSITORY')
         private functionRepository: Repository<Function>,
+
+        @Inject('ROOMS_REPOSITORY')
+        private roomsRepository: Repository<Room>,
+
+        @Inject('MOVIES_REPOSITORY')
+        private moviesRepository: Repository<Movie>,
     ) {}
 
     async create(createFunctionDto: CreateFunctionDto): Promise<Function> {
-        const newFunction = this.functionRepository.create(createFunctionDto);
+        const newFunction = new Function();
+        newFunction.startTime = createFunctionDto.startTime;
+        newFunction.endTime = createFunctionDto.endTime;
+
+        newFunction.movie = await this.moviesRepository.findOne(
+            {
+                where: { id: createFunctionDto.movieId }
+            }
+        );
+        newFunction.room = await this.roomsRepository.findOne({
+            where: { id: createFunctionDto.roomId }
+        });
         return this.functionRepository.save(newFunction);
     }
 
@@ -32,6 +51,31 @@ export class FunctionsService {
         }
         return functionEntity;
     }
+
+    
+
+    async findAvailableRooms(dateString: string): Promise<Room[]> {
+        const dateTime = new Date(dateString);
+
+        const scheduledFunctions = await this.functionRepository.find({
+            where: {
+                startTime: LessThanOrEqual(dateTime),
+                endTime: MoreThanOrEqual(dateTime)
+            },
+            relations: ['room']
+        });
+
+        const reservedRoomIds = scheduledFunctions.map(func => func.room.id);
+
+        const availableRooms = await this.roomsRepository.find({
+            where: {
+                id: Not(In(reservedRoomIds))
+            }
+        });
+
+        return availableRooms;
+        
+    }
     
 
     async update(id: number, updateFunctionDto: UpdateFunctionDto): Promise<Function> {
@@ -46,4 +90,6 @@ export class FunctionsService {
             throw new NotFoundException(`Function with ID ${id} not found.`);
         }
     }
+
+
 }

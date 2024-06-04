@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Function } from '../functions/functions.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Room {
@@ -13,5 +14,7 @@ export class Room {
 
 	@Column({ default: true })
 	isAvailable: boolean;
-    functions: any;
+    
+	@OneToMany(()=> Function, func => func.room)
+	functions: Function[];
 }

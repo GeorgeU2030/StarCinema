@@ -1,4 +1,4 @@
-import { Controller, HttpStatus, HttpCode, Post,Body } from '@nestjs/common';
+import { Controller, HttpStatus, HttpCode, Post,Body, Req, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorators/public';
 import { createEmployeeDto } from '../users/dto/create-employee-dto';
@@ -16,10 +16,10 @@ export class AuthController {
       return this.authService.signIn(signInDto.email, signInDto.password);
     }
 
+    @Roles(Role.Admin)
     @HttpCode(HttpStatus.CREATED)
     @Post('register_employee')
-    @Roles(Role.Admin)
-    signUpEmployee(@Body() signUpDto: createEmployeeDto) { 
+    signUpEmployee(@Body() signUpDto : createEmployeeDto) { 
       signUpDto.role = 'employee';     
       return this.authService.signUpEmployee(signUpDto);
     }
@@ -33,4 +33,11 @@ export class AuthController {
     }
 
     
+    @Roles(Role.Admin, Role.Employee, Role.Customer)
+    @HttpCode(HttpStatus.OK)
+    @Get('verify_token')
+    verifyToken(@Req() req: Request) {
+        return { status: 'success', message: 'Token is valid' };
+    }
+
 }

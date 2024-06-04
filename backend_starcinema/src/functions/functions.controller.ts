@@ -26,13 +26,22 @@ export class FunctionsController {
 		return this.functionsService.findAll();
 	}
 
+	@Roles(Role.Customer)
 	@HttpCode(HttpStatus.OK)
 	@Get(':id')
 	findOne(@Param('id') id: number) {
 		return this.functionsService.findOne(id);
 	}
 
-	@Roles(Role.Admin)
+	@Roles(Role.Admin, Role.Employee)
+	@HttpCode(HttpStatus.OK)
+	@Get('roomsAvailable/:datestring')
+	findRoomsAvailable(@Param('datestring') datestring: string) {
+		return this.functionsService.findAvailableRooms(datestring);
+	}
+
+
+	@Roles(Role.Admin, Role.Employee)
 	@HttpCode(HttpStatus.CREATED)
 	@Post('create')
 	create(@Body() createFunctionDto: CreateFunctionDto) {

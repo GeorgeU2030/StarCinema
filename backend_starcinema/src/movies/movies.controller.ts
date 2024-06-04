@@ -27,12 +27,33 @@ export class MoviesController {
 
 	@Public()
 	@HttpCode(HttpStatus.OK)
-	@Get(':title')
+	@Get('title/:title')
 	findOneByTitle(@Param('title') title: string) {
 		return this.moviesService.findOneByTitle(title);
 	}
 
-	@Roles(Role.Admin)
+	@Roles(Role.Employee, Role.Customer)
+	@HttpCode(HttpStatus.OK)
+	@Get('getmovies/functions/atr')
+	getMoviesWithFunctions() {
+		return this.moviesService.getMoviesWithFunctions();
+	}
+
+	@Roles(Role.Employee, Role.Customer)
+	@HttpCode(HttpStatus.OK)
+	@Get('getmovies/functions/:date/:id')
+	getMoviesWithFunctionsId(@Param('id') id: number, @Param('date') date: string) {
+		return this.moviesService.getMoviesWithFunctionsId(id,date);
+	}
+
+	@Roles(Role.Employee)
+	@HttpCode(HttpStatus.OK)
+	@Get('movienow/:title')
+	findOneByMovieNow(@Param('title') title: string) {
+		return this.moviesService.findOneByTitleMovie(title);
+	}
+
+	@Roles(Role.Admin, Role.Employee, Role.Customer)
 	@HttpCode(HttpStatus.OK)
 	@Get(':id')
 	findOneById(@Param('id') id: number) {
@@ -52,4 +73,5 @@ export class MoviesController {
 	delete(@Param('id') id: number) {
 		return this.moviesService.delete(id);
 	}
+
 }

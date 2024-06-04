@@ -26,11 +26,12 @@ export class RoomsController {
 	}
 
 	@HttpCode(HttpStatus.OK)
-	@Get(':name')
+	@Get('/name:name')
 	findOneByName(@Param('name') name: string) {
 		return this.roomsService.findOneByName(name);
 	}
 
+	@Roles(Role.Employee)
 	@HttpCode(HttpStatus.OK)
 	@Get(':id')
 	findOneById(@Param('id') id: number) {
